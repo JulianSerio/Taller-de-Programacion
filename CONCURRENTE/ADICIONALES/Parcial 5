@@ -1,0 +1,143 @@
+programa parcial5
+procesos
+  proceso juntarFlores (ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso juntarPapeles (ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso avanzarPapelero (E aux:numero; ES p:numero)
+  comenzar
+    repetir aux
+      juntarPapeles(p)
+      mover 
+    juntarPapeles(p)
+  fin
+  proceso avanzarFlorero (E aux:numero; ES f:numero)
+  comenzar
+    repetir aux
+      juntarFlores(f)
+      mover
+    juntarFlores(f)
+  fin
+  proceso orientar (E aux:numero)
+  comenzar
+    repetir aux
+      derecha
+  fin
+areas
+  cuadrado1:AreaPC(3,3,13,13)
+  cuadrado2:AreaPC(16,3,26,13)
+  areaJefe:AreaP(14,6,14,6)
+robots
+  robot papelero
+  variables
+    id,p,f,total:numero
+    ok,listo:boolean
+  comenzar
+    p:=0
+    RecibirMensaje(id,robotJefe)
+    orientar(2)
+    juntarPapeles(p)
+    mover
+    si (id = 1) 
+      EnviarMensaje(V,robot3)
+    sino
+      EnviarMensaje(V,robot4)
+    avanzarPapelero(9,p)
+    derecha
+    avanzarPapelero(9,p)
+    RecibirMensaje(listo,*)
+    mover
+    juntarPapeles(p)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(p,robotJefe)
+  fin
+  robot florero
+  variables
+    id,f:numero
+    ok,listo:boolean
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    f:=0
+    juntarFlores(f)
+    mover
+    si (id = 3)
+      EnviarMensaje(V,robot1)
+    sino
+      EnviarMensaje(V,robot2)
+    avanzarFlorero(9,f)
+    derecha
+    avanzarFlorero(9,f)
+    RecibirMensaje(listo,*)
+    mover
+    juntarFlores(f)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(f,robotJefe)
+  fin
+
+  robot jefe
+  variables
+    id,cant,total,fin1,fin2,winner:numero
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    total:=0
+    fin1:= 0
+    fin2:= 0
+    winner:=0
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cant,robot1)
+        total := total + cant
+        fin1:= fin1 + 1
+      sino 
+        si (id = 2)
+          RecibirMensaje(cant,robot2)
+          total := total + cant
+          fin2:= fin2 + 1
+        sino  
+          si (id = 3)
+            RecibirMensaje(cant,robot3)
+            total := total + cant
+            fin1:= fin1 + 1
+          sino
+            RecibirMensaje(cant,robot4)
+            total := total + cant
+            fin2:= fin2 + 1
+      si (fin1 = 2)
+        si (winner = 0)
+          winner:= 1
+      sino
+        si (fin2 = 2) 
+          si (winner = 0)
+            winner:= 2    
+    Informar('GANA',winner)
+    Informar('TOTAL',total)
+  fin     
+variables
+  robot1,robot2:papelero
+  robot3,robot4:florero
+  robotJefe:jefe
+comenzar 
+  AsignarArea(robot1,cuadrado1)
+  AsignarArea(robot2,cuadrado2)
+  AsignarArea(robot3,cuadrado1)
+  AsignarArea(robot4,cuadrado2)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robotJefe,14,6)
+  Iniciar(robot1,13,13)
+  Iniciar(robot2,26,13)
+  Iniciar(robot3,3,3) 
+  Iniciar(robot4,16,3)
+fin
+

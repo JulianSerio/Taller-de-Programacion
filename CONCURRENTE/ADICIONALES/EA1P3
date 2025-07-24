@@ -1,0 +1,93 @@
+programa EA1P3
+procesos
+  proceso juntarPapeles 
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+  fin
+  proceso juntarFlores 
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+  fin
+  proceso voyAdepositarFlorero (E avIn:numero; E caIn:numero)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    si (HayFlorEnLaBolsa) 
+      depositarFlor
+    Pos(avIn,caIn)
+    LiberarEsquina(10,10)
+  fin
+  proceso voyAdepositarPapelero (E avIn:numero; E caIn:numero)
+  comenzar
+    BloquearEsquina(10,10)
+    Pos(10,10)
+    si (HayPapelEnLaBolsa) 
+      depositarPapel
+    Pos(avIn,caIn)
+    LiberarEsquina(10,10)
+  fin
+areas
+  floreros:AreaPC(1,1,5,10)
+  papeleros:AreaPC(6,1,10,9)
+  area1:AreaP(6,10,7,10)
+  area2:AreaP(8,10,9,10)
+  deposito:AreaC(10,10,10,10)
+robots
+  robot florero
+  variables
+    avIn,caIn,ca,av:numero
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 5
+      Random(av,1,5)
+      Random(ca,1,10)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarFlores
+      Pos(avIn,caIn)
+      LiberarEsquina(av,ca)
+    mientras(HayFlorEnLaBolsa)
+      voyAdepositarFlorero(avIn,caIn)
+  fin
+  robot papelero
+  variables
+    avIn,caIn,ca,av:numero
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 3
+      Random(av,6,10)
+      Random(ca,1,9)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarPapeles
+      Pos(avIn,caIn)
+      LiberarEsquina(av,ca)
+    mientras(HayPapelEnLaBolsa)
+      voyAdepositarPapelero(avIn,caIn)
+  fin
+variables
+  robot1,robot2:florero
+  robot3,robot4:papelero
+comenzar
+  AsignarArea(robot1,floreros)
+  AsignarArea(robot2,floreros)
+  AsignarArea(robot3,papeleros)
+  AsignarArea(robot4,papeleros)
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area1)
+  AsignarArea(robot3,area2)
+  AsignarArea(robot4,area2)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robot3,deposito)
+  AsignarArea(robot4,deposito)
+  Iniciar(robot1,6,10)
+  Iniciar(robot2,7,10)
+  Iniciar(robot3,8,10)
+  Iniciar(robot4,9,10)
+fin
+

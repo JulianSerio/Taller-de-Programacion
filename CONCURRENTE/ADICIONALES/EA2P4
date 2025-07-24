@@ -1,0 +1,87 @@
+programa EA2P4
+procesos
+  proceso bloquearDepositar (E avIn:numero; E caIn:numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    repetir 5
+      depositarPapel 
+    Pos(avIn,caIn)
+    LiberarEsquina(50,50)
+  fin
+  proceso juntarPapeles (ES p:numero; E avIn:numero; E caIn:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      mientras(HayPapelEnLaEsquina) & (p < 5)
+        tomarPapel
+        p:= p + 1
+      si (p = 5)
+        bloquearDepositar(avIn,caIn)
+        p:=0
+  fin
+areas
+  area1:AreaP(5,1,5,100)
+  area2:AreaP(10,1,10,100)
+  esquina:AreaC(50,50,50,50)
+  area3:AreaP(11,1,11,1)
+  area4:AreaP(12,1,12,1)
+robots
+  robot productor
+  variables
+    p,avIn,caIn:numero
+  comenzar
+    p:=0
+    avIn:= PosAv
+    repetir 99
+      caIn:= PosCa
+      juntarPapeles(p,avIn,caIn)
+      mover
+    caIn:=PosCa
+    juntarPapeles(p,avIn,caIn)
+  fin
+  robot consumidor
+  variables
+    p,cant,cont,avIn,caIn:numero
+  comenzar
+    p:=0
+    cont:=0
+    avIn:= PosAv
+    caIn:= PosCa
+    mientras (cont <> 8) 
+      Random(cant,2,5)
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      mientras (HayPapelEnLaEsquina) & (p < cant)
+        tomarPapel
+        p:= p + 1
+      si (p = cant)
+        Pos(avIn,caIn)
+        LiberarEsquina(50,50)
+        repetir cant 
+          depositarPapel
+        p:=0
+      sino
+        cont:= cont + 1
+        repetir p 
+          depositarPapel
+        Pos(avIn,caIn)
+        LiberarEsquina(50,50)  
+        p:=0
+  fin
+variables
+  robot1,robot2:productor
+  robot3,robot4:consumidor
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot4,area4)
+  AsignarArea(robot1,esquina)
+  AsignarArea(robot2,esquina)
+  AsignarArea(robot3,esquina)
+  AsignarArea(robot4,esquina)
+  Iniciar(robot1,5,1) 
+  Iniciar(robot2,10,1)
+  Iniciar(robot3,11,1)
+  Iniciar(robot4,12,1)
+fin

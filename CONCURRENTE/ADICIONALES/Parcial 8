@@ -1,0 +1,137 @@
+programa parcial8
+areas
+  FuenteFlores:AreaP(10,12,10,12)
+  FuentePapeles:AreaP(10,10,10,10)
+  AreaAzul:AreaP(13,12,20,12)
+  AreaVerde:AreaP(13,10,20,10)
+  AreaJefe:AreaP(20,11,20,11)
+  Base:AreaPC(12,11,12,11)
+  RecolectorAzul:AreaP(11,12,11,12)
+  RecolectorVerde:AreaP(11,10,11,10)
+  DepositadorAzul:AreaP(12,12,12,12)
+  DepositadorVerde:AreaP(12,10,12,10)
+robots
+  robot recolectorAzul 
+  variables
+    avIn,caIn:numero
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 8
+      Pos(10,12)
+      tomarFlor
+      BloquearEsquina(12,11) 
+      Pos(12,11)
+      depositarFlor
+      Pos(avIn,caIn)
+      LiberarEsquina(12,11)
+      EnviarMensaje(V,robot2)
+  fin
+ 
+  robot depositadorAzul
+  variables
+    id,avIn,caIn,av:numero
+    listo,termine:boolean
+  comenzar
+    avIn:= PosAv 
+    caIn:= PosCa
+    av:= PosAv + 1 
+    derecha
+    RecibirMensaje(id,robotJefe)
+    repetir 8
+      RecibirMensaje(listo,robot1)
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      tomarFlor
+      Pos(av,caIn)
+      LiberarEsquina(12,11)
+      depositarFlor
+      av:= av + 1
+    EnviarMensaje(id,robotJefe)
+    RecibirMensaje(termine,robotJefe)
+  fin
+  robot recolectorVerde
+  variables
+    avIn,caIn:numero
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 8
+      Pos(10,10)
+      tomarPapel
+      BloquearEsquina(12,11) 
+      Pos(12,11)
+      depositarPapel
+      Pos(avIn,caIn)
+      LiberarEsquina(12,11)
+      EnviarMensaje(V,robot4)
+  fin
+  robot depositadorVerde
+  variables
+    id,avIn,caIn,av:numero
+    termine,listo:boolean
+  comenzar
+    avIn:= PosAv
+    caIn:= PosCa
+    av:= PosAv + 1
+    derecha
+    RecibirMensaje(id,robotJefe)
+    repetir 8
+      RecibirMensaje(listo,robot3)
+      BloquearEsquina(12,11)
+      Pos(12,11)
+      tomarPapel
+      Pos(av,caIn)
+      LiberarEsquina(12,11)
+      depositarPapel
+      av:= av + 1
+    EnviarMensaje(id,robotJefe)
+    RecibirMensaje(termine,robotJefe)
+  fin
+  robot jefe
+  variables 
+    id,winner,cont:numero
+  comenzar
+    EnviarMensaje(1,robot2)
+    EnviarMensaje(2,robot4)
+    cont:= 0 
+    repetir 2 
+      RecibirMensaje(id,*)
+      si (id = 1)
+        EnviarMensaje(V,robot2)
+      sino
+        EnviarMensaje(V,robot4)
+      si (cont < 1)
+        cont:= cont + 1
+        winner:= id
+    si (winner = 1) 
+      Informar('AZUL',winner)
+    sino
+      Informar('VERDE',winner)
+  fin
+variables
+  robot1:recolectorAzul
+  robot2:depositadorAzul
+  robot3:recolectorVerde
+  robot4:depositadorVerde
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,FuenteFlores)
+  AsignarArea(robot1,Base)
+  AsignarArea(robot1,RecolectorAzul)
+  AsignarArea(robot3,FuentePapeles)
+  AsignarArea(robot3,Base)
+  AsignarArea(robot3,RecolectorVerde)
+  AsignarArea(robot2,Base)
+  AsignarArea(robot2,DepositadorAzul)
+  AsignarArea(robot2,AreaAzul)
+  AsignarArea(robot4,Base)
+  AsignarArea(robot4,DepositadorVerde)
+  AsignarArea(robot4,AreaVerde)
+  AsignarArea(robotJefe,AreaJefe)
+  Iniciar(robot1,11,12)
+  Iniciar(robot2,12,12)
+  Iniciar(robot3,11,10)
+  Iniciar(robot4,12,10)
+  Iniciar(robotJefe,20,11)
+fin

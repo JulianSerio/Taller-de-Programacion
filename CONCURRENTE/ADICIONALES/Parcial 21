@@ -1,0 +1,85 @@
+programa parcial
+procesos
+  proceso juntarPapeles (ES p:numero)
+  comenzar 
+    si (HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+areas
+  area1:AreaP(5,1,5,100)
+  area2:AreaP(7,1,7,100)
+  area3:AreaP(1,1,1,1)
+  deposito:AreaC(10,10,10,10)
+robots
+  robot corredor 
+  variables 
+    id,p,pasos,avIn,caIn:numero
+  comenzar
+    RecibirMensaje(id,robotRecolector)
+    p:=0
+    pasos:=0
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 99
+      juntarPapeles(p)
+      mover
+      pasos:= pasos + 1
+      si ((pasos = 12) | (p = 4))
+        BloquearEsquina(10,10)
+        Pos(10,10)
+        repetir p
+          depositarPapel
+        Pos(avIn,caIn)
+        LiberarEsquina(10,10)
+        EnviarMensaje(id,robotRecolector)
+        EnviarMensaje(p,robotRecolector)
+        p:=0
+        si(pasos = 12)
+          pasos:= 0
+      caIn:= caIn+1
+    mover
+    juntarPapeles(p)
+    EnviarMensaje(0,robotRecolector)
+  fin
+  robot recolector 
+  variables 
+    id,min,minID,p1,p2,cont,cant:numero
+  comenzar 
+    cont:= 0
+    p1:= 0
+    p2:= 0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    mientras (cont <> 2)
+      RecibirMensaje(id,*)
+      si (id <> 0)
+        si (id = 1)
+          RecibirMensaje(cant,robot1)
+          p1:= p1 + cant
+        sino 
+          si (id = 2)
+            RecibirMensaje(cant,robot2)
+            p2:= p2 + cant
+      sino
+        cont:= cont + 1
+    si (p1 < p2)
+      Informar('ROBOT1',p1)
+    sino
+      Informar('ROBOT2',p2)
+  fin
+variables
+  robot1,robot2:corredor
+  robotRecolector:recolector
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robotRecolector,area3)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robotRecolector,deposito)
+  Iniciar(robot1,5,1)
+  Iniciar(robot2,7,1)
+  Iniciar(robotRecolector,1,1)
+fin
+

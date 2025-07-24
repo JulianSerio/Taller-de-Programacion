@@ -1,0 +1,143 @@
+programa parcial10
+procesos
+  proceso juntarTodo (ES f:numero; ES p:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+      EnviarMensaje(V,robotJefe)
+    mientras(HayPapelEnLaEsquina) 
+      tomarPapel
+      p:= p + 1
+      EnviarMensaje(V,robotJefe)
+  fin
+  proceso enviarID
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+  fin
+  proceso enviarListo
+  comenzar
+    EnviarMensaje(V,robot1)
+    EnviarMensaje(V,robot2)
+    EnviarMensaje(V,robot3)
+    EnviarMensaje(V,robot4)
+  fin
+  proceso maximo (E id:numero; E cant:numero; ES max:numero; ES maxID:numero)
+  comenzar
+    si (cant > max)
+      max:= cant
+      maxID:= id
+  fin
+  proceso ganador (E maxID:numero)
+  comenzar
+    si (maxID = 1)
+      EnviarMensaje(V,robot1)
+      EnviarMensaje(F,robot2)
+      EnviarMensaje(F,robot3)
+      EnviarMensaje(F,robot4)
+    sino
+      si (maxID = 2)
+        EnviarMensaje(V,robot2)
+        EnviarMensaje(F,robot1)
+        EnviarMensaje(F,robot3)
+        EnviarMensaje(F,robot4)
+      sino
+        si (maxID = 3)
+          EnviarMensaje(V,robot3)
+          EnviarMensaje(F,robot1)
+          EnviarMensaje(F,robot2)
+          EnviarMensaje(F,robot4) 
+        sino
+          EnviarMensaje(V,robot4)
+          EnviarMensaje(F,robot1)
+          EnviarMensaje(F,robot2)
+          EnviarMensaje(F,robot3)
+  fin
+areas
+  area1:AreaP(10,10,10,10)
+  area2:AreaP(11,10,11,10)
+  area3:AreaP(12,10,12,10)
+  area4:AreaP(13,10,13,10)
+  areaComun:AreaPC(45,48,62,69)
+  areaJefe:AreaP(1,1,1,1)
+robots
+  robot recolector
+  variables
+    id,f,p,cant,avIn,caIn,av,ca:numero
+    ok,gane:boolean
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    f:=0
+    p:=0
+    avIn:= PosAv
+    caIn:= PosCa
+    repetir 5
+      Random(av,45,62)
+      Random(ca,48,69)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarTodo(f,p)
+      Pos(avIn,caIn)
+      LiberarEsquina(av,ca)
+    cant:= f + p
+    EnviarMensaje(F,robotJefe)
+    RecibirMensaje(ok,robotJefe)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(cant,robotJefe)
+    RecibirMensaje(gane,robotJefe)
+    si (gane)
+      repetir p
+        depositarPapel
+      repetir f
+        depositarFlor
+  fin
+  robot jefe
+  variables
+    id,max,maxID,cant,cont:numero
+    junte:boolean
+  comenzar
+    enviarID
+    cont:=0
+    mientras(cont <> 4)
+      RecibirMensaje(junte,*)
+      si (junte = F)
+        cont:= cont + 1
+    enviarListo
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cant,robot1)
+      sino
+        si (id = 2)
+          RecibirMensaje(cant,robot2)
+        sino
+          si (id = 3)
+            RecibirMensaje(cant,robot3)
+          sino
+            RecibirMensaje(cant,robot4)
+      maximo(id,cant,max,maxID) 
+    Informar(maxID,max)
+    ganador(maxID) 
+  fin
+variables
+  robot1,robot2,robot3,robot4:recolector
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot4,area4)
+  AsignarArea(robot1,areaComun)
+  AsignarArea(robot2,areaComun)
+  AsignarArea(robot3,areaComun)
+  AsignarArea(robot4,areaComun)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robotJefe,1,1)
+  Iniciar(robot1,10,10)
+  Iniciar(robot2,11,10)
+  Iniciar(robot3,12,10)
+  Iniciar(robot4,13,10)
+fin

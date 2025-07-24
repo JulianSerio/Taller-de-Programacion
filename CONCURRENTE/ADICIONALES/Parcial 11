@@ -1,0 +1,93 @@
+programa parcial11
+procesos
+  proceso juntarFlores (ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+areas
+  areaComun:AreaPC(3,30,15,45)
+  area1:AreaP(3,1,3,29)
+  area2:AreaP(5,1,5,29)
+  area3:AreaP(7,1,7,29)
+  area4:AreaP(9,1,9,29)
+  deposito:AreaPC(35,50,35,50)
+  areaJefe:AreaP(1,1,1,1)
+robots
+  robot corredor
+  variables 
+    id,f,pasos,ca,av:numero
+  comenzar
+    f:=0
+    ca:= PosCa 
+    RecibirMensaje(id,robotJefe)
+    mientras(ca < 30)
+      Random(pasos,1,5)
+      mientras (ca < 30)
+        juntarFlores(f)
+        mover
+        ca:= PosCa
+      juntarFlores(f) 
+    av:= PosAv
+    ca:= PosCa
+    repetir f 
+      BloquearEsquina(35,50)
+      Pos(35,50) 
+      depositarFlor
+      Pos(av,ca)
+      LiberarEsquina(35,50)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(V,robotJefe) 
+  fin  
+  robot jefe
+  variables
+    id,cont,winner:numero
+    termine:boolean
+  comenzar
+    cont:= 0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(termine,robot1)
+      sino
+        si (id = 2)
+          RecibirMensaje(termine,robot2)
+        sino
+          si (id = 3)
+            RecibirMensaje(termine,robot3)
+          sino
+            RecibirMensaje(termine,robot4)
+      si (cont < 1)
+        cont:= cont + 1
+        winner:= id 
+    Informar(winner)
+  fin
+variables
+  robot1,robot2,robot3,robot4:corredor
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)  
+  AsignarArea(robot4,area4)
+  AsignarArea(robotJefe,areaJefe)
+  AsignarArea(robot1,areaComun)
+  AsignarArea(robot2,areaComun)
+  AsignarArea(robot3,areaComun)  
+  AsignarArea(robot4,areaComun)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robot3,deposito)  
+  AsignarArea(robot4,deposito)
+  Iniciar(robot1,3,1)
+  Iniciar(robot2,5,1)
+  Iniciar(robot3,7,1)
+  Iniciar(robot4,9,1)
+  Iniciar(robotJefe,1,1)
+fin 
+

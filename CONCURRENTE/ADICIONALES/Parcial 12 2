@@ -1,0 +1,139 @@
+programa parcial12
+procesos
+  proceso enviarID
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+  fin
+  proceso maximo (E id:numero; E cant:numero; ES maxID:numero; ES max:numero)
+  comenzar
+    si (cant > max)
+      max:= cant
+      maxID:= id
+  fin
+  proceso juntoYcompruebo (ES o:numero; ES quedan:boolean)
+  comenzar
+    si (HayFlorEnLaEsquina) & (HayPapelEnLaEsquina)
+      tomarFlor
+      tomarPapel
+      o:= o + 2
+      si ~((HayFlorEnLaEsquina) | (HayPapelEnLaEsquina))
+        quedan:= F
+    sino
+      si (HayFlorEnLaEsquina)  
+        tomarFlor
+        o:= o + 1
+        si ~(HayFlorEnLaEsquina)
+          quedan:= F
+      sino
+        si (HayPapelEnLaEsquina) 
+          tomarPapel
+          o:= o + 1
+          si ~(HayPapelEnLaEsquina)
+            quedan:= F
+        sino 
+          quedan:= F 
+  fin
+  proceso quienGano (E winner:numero)
+  comenzar
+    si (winner = 1)
+      EnviarMensaje(V,robot1)
+      EnviarMensaje(F,robot2)
+      EnviarMensaje(F,robot3)
+    sino
+      si (winner = 2)
+        EnviarMensaje(V,robot2)
+        EnviarMensaje(F,robot1)
+        EnviarMensaje(F,robot3)
+      sino
+        EnviarMensaje(V,robot3)
+        EnviarMensaje(F,robot1)
+        EnviarMensaje(F,robot2)
+  fin
+
+areas
+  deposito:AreaPC(5,5,5,5)
+  area1:AreaP(2,2,2,2)
+  area2:AreaP(3,3,3,3)
+  area3:AreaP(4,4,4,4)
+  areaJefe:AreaP(1,1,1,1)
+  av:AreaPC(10,10,10,100)
+robots
+  robot recolector
+  variables
+    o,avIn,caIn,id:numero
+    quedan,gane,sigo:boolean
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    o:=0
+    avIn:= PosAv
+    caIn:= PosCa
+    quedan:=V
+    mientras(quedan)  
+      BloquearEsquina(5,5)
+      Pos(5,5)
+      juntoYcompruebo(o,quedan)
+      Pos(avIn,caIn)
+      LiberarEsquina(5,5)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(o,robotJefe) 
+    RecibirMensaje(gane,robotJefe)
+    si (gane)
+      Pos(10,10)
+      sigo:= V
+      mientras(PosCa < 100) & (sigo)
+        si (HayFlorEnLaBolsa)
+          depositarFlor
+          mover
+        sino
+          sigo:= F
+        si (HayPapelEnLaBolsa)
+          depositarPapel  
+          mover
+        sino
+          sigo:= F
+  fin
+  robot jefe
+  variables
+    id,max,maxID,winner,cont,cant:numero
+  comenzar
+    max:=0
+    cont:=0
+    enviarID
+    repetir 3
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cant,robot1)
+      sino
+        si (id = 2)
+          RecibirMensaje(cant,robot2)
+        sino
+          RecibirMensaje(cant,robot3)
+      si (cont < 1)
+        cont:= cont + 1
+        winner:= id
+      maximo(id,cant,maxID,max)
+    quienGano(winner)
+    Informar(maxID,max)
+  fin
+variables
+  robot1,robot2,robot3:recolector
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robot3,deposito)
+  AsignarArea(robot1,av)
+  AsignarArea(robot2,av)
+  AsignarArea(robot3,av)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robotJefe,1,1)
+  Iniciar(robot1,2,2) 
+  Iniciar(robot2,3,3)
+  Iniciar(robot3,4,4)
+fin
+

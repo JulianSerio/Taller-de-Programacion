@@ -1,0 +1,79 @@
+programa miParcial
+procesos
+  proceso maximo (E id:numero; ES maxID:numero; E pasos:numero; ES max:numero)
+  comenzar
+    si (pasos > max)
+      max:= pasos
+      maxID:= id
+  fin
+areas
+  area1:AreaP(1,1,1,100)
+  area2:AreaP(2,1,2,100)
+  area3:AreaP(3,1,3,100)
+  areaJefe:AreaP(4,1,4,1)
+  deposito:AreaC(50,50,50,50)
+robots
+  robot corredor
+  variables 
+    id,cant,p,avIn,caIn:numero
+  comenzar
+    p:=0
+    RecibirMensaje(id,robotJefe)
+    avIn:= PosAv
+    repetir 5
+      caIn:= PosCa
+      Random(cant,4,8)
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      repetir cant
+        tomarFlor
+      Pos(avIn,caIn)
+      LiberarEsquina(50,50)
+      repetir cant
+        mover
+        p:= p + 1
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(p,robotJefe)
+  fin
+  robot jefe
+  variables
+    id,max,maxID,pasos,f:numero
+  comenzar
+    f:=0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    repetir 3
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(pasos,robot1)
+      sino
+        si (id = 2)
+          RecibirMensaje(pasos,robot2)
+        sino
+          RecibirMensaje(pasos,robot3)
+      maximo(id,maxID,pasos,max)
+    Informar(maxID,max)
+    Pos(50,50)
+    mientras (HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1 
+    Informar('QUEDAN',f)
+  fin
+variables
+  robot1,robot2,robot3:corredor
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3) 
+  AsignarArea(robotJefe,areaJefe)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robot3,deposito) 
+  AsignarArea(robotJefe,deposito)
+  Iniciar(robot1,1,1)
+  Iniciar(robot2,2,1)
+  Iniciar(robot3,3,1)
+  Iniciar(robotJefe,4,1)
+fin

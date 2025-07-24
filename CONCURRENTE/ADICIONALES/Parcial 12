@@ -1,0 +1,133 @@
+programa parcial12
+procesos
+  proceso maximo(ES max:numero; ES maxID:numero; E cant:numero; E id:numero)
+  comenzar
+    si (cant > max)
+      max:= cant
+      maxID:= id
+  fin
+  proceso hayOno (ES o:numero; ES hay:boolean)
+  comenzar
+    si (HayPapelEnLaEsquina) & (HayFlorEnLaEsquina)
+      tomarFlor
+      tomarPapel
+      o:= o + 2
+      si ~((HayPapelEnLaEsquina) | (HayFlorEnLaEsquina))
+        hay:=F
+    sino
+      si (HayPapelEnLaEsquina) 
+        tomarPapel
+        o:= o + 1
+        si ~(HayPapelEnLaEsquina)
+          hay:= F
+      sino 
+        si (HayFlorEnLaEsquina)
+          tomarFlor
+          o:= o + 1
+          si ~(HayFlorEnLaEsquina)
+            hay:=F
+        sino
+          hay:= F
+  fin  
+  proceso quienGano (E winner:numero)
+  comenzar
+    si (winner = 1) 
+      EnviarMensaje(V,robot1)
+      EnviarMensaje(F,robot2)
+      EnviarMensaje(F,robot3)
+    sino
+      si (winner = 2)
+        EnviarMensaje(V,robot2)
+        EnviarMensaje(F,robot1)
+        EnviarMensaje(F,robot3)  
+      sino
+        EnviarMensaje(V,robot3)
+        EnviarMensaje(F,robot2)
+        EnviarMensaje(F,robot1) 
+  fin 
+ 
+areas
+  area1:AreaP(2,2,2,2)
+  area2:AreaP(3,3,3,3)
+  area3:AreaP(4,4,4,4)
+  fuente:AreaPC(5,5,5,5)
+  areaJefe:AreaP(1,1,1,1)
+  avenida:AreaPC(10,10,10,100)
+robots
+  robot recolector 
+  variables 
+    id,o,avIn,caIn:numero
+    hay,gane:boolean
+  comenzar 
+    hay:=V
+    o:=0
+    RecibirMensaje(id,robotJefe)
+    avIn:= PosAv
+    caIn:= PosCa
+    mientras(hay)
+      BloquearEsquina(5,5)
+      Pos(5,5) 
+      hayOno(o,hay)
+      Pos(avIn,caIn)
+      LiberarEsquina(5,5)
+    EnviarMensaje(id,robotJefe)
+    RecibirMensaje(gane,robotJefe)
+    si (gane)
+      Pos(10,10)
+      repetir o
+        si (HayFlorEnLaBolsa)
+          depositarFlor
+          mover
+        si (HayPapelEnLaBolsa)
+          depositarPapel
+          mover   
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(o,robotJefe)
+  fin
+  robot jefe
+  variables 
+    id,max,maxID,cant,winner,cont:numero
+  comenzar
+    max:=0
+    cont:=0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    repetir 3
+      RecibirMensaje(id,*)
+      si (cont < 1)
+        cont:= cont + 1
+        winner:= id
+    quienGano(winner)
+    repetir 3
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cant,robot1)      
+      sino 
+        si (id = 2)
+          RecibirMensaje(cant,robot2)
+        sino
+          RecibirMensaje(cant,robot3)
+      maximo(max,maxID,cant,id)
+    Informar(maxID,max)
+  fin
+variables
+  robot1,robot2,robot3:recolector
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot1,fuente)
+  AsignarArea(robot2,fuente)
+  AsignarArea(robot3,fuente)
+  AsignarArea(robot1,avenida)
+  AsignarArea(robot2,avenida)
+  AsignarArea(robot3,avenida)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robotJefe,1,1)
+  Iniciar(robot1,2,2)
+  Iniciar(robot2,3,3)
+  Iniciar(robot3,4,4)
+fin
+

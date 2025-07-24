@@ -1,0 +1,92 @@
+programa parcial19
+procesos 
+  proceso enviarID
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+  fin
+  proceso juntarPapeles (ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso lado (ES p:numero)
+  comenzar
+    repetir 14
+      juntarPapeles(p)
+      mover
+    juntarPapeles(p)
+  fin
+  proceso bloqueoDeposito (ES p:numero; E av:numero; E ca:numero; E id:numero)
+  comenzar
+    BloquearEsquina(50,50)
+    Pos(50,50)
+    repetir p 
+      depositarPapel
+    Pos(av,ca)
+    LiberarEsquina(50,50)
+    EnviarMensaje(id,robotAcumulador)
+    EnviarMensaje(p,robotAcumulador)
+    p:=0
+  fin
+areas
+  cuadrado1:AreaP(1,1,15,15)
+  cuadrado2:AreaP(30,1,44,15)
+  areaAcumulador:AreaP(100,100,100,100)
+  deposito:AreaC(50,50,50,50)
+robots
+  robot recolector 
+  variables
+    id,p,av,ca:numero
+  comenzar
+    RecibirMensaje(id,robotAcumulador)
+    repetir 4
+      lado(p)
+      av:=PosAv
+      ca:=PosCa
+      bloqueoDeposito(p,av,ca,id) 
+      derecha
+  fin
+  robot acumulador 
+  variables 
+    cont1,cont2,id,avIn,caIn,cant:numero
+  comenzar
+    cont1:=0
+    cont2:=0
+    avIn:= PosAv 
+    caIn:= PosCa
+    enviarID
+    repetir 8
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(cant,robot1)
+        cont1:= cont1 + cant
+      sino
+        RecibirMensaje(cant,robot2)
+        cont2:= cont2 + cant
+      BloquearEsquina(50,50)
+      Pos(50,50)
+      repetir cant
+        tomarPapel
+      Pos(avIn,caIn)
+      LiberarEsquina(50,50)
+    si (cont1 > cont2)
+      Informar(1)
+    sino
+      Informar(2)
+  fin
+variables
+  robot1,robot2:recolector
+  robotAcumulador:acumulador
+comenzar
+  AsignarArea(robot1,cuadrado1)
+  AsignarArea(robot2,cuadrado2)
+  AsignarArea(robotAcumulador,areaAcumulador)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robotAcumulador,deposito)
+  Iniciar(robot1,1,1)
+  Iniciar(robot2,30,1)
+  Iniciar(robotAcumulador,100,100)
+fin

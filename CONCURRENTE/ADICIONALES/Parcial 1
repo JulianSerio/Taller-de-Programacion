@@ -1,0 +1,105 @@
+programa parcial1
+procesos
+  proceso maximo (E id:numero; E cant:numero; ES max:numero; ES maxId:numero)
+  comenzar
+    si (cant > max) 
+      max:=cant
+      maxId:= id
+  fin
+  proceso juntarCosas (E id:numero ;ES cant:numero)
+  variables
+    recibido:boolean
+  comenzar
+    mientras(HayPapelEnLaEsquina) 
+      tomarPapel
+      cant:= cant + 1
+      EnviarMensaje(id,robotJefe)
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      cant:= cant + 1
+      EnviarMensaje(id,robotJefe)
+  fin
+areas
+  area:AreaPC(45,48,62,69)
+  area1:AreaP(10,10,10,10)
+  area2:AreaP(11,10,11,10)
+  area3:AreaP(12,10,12,10)
+  area4:AreaP(13,10,13,10)
+  areaJefe:AreaP(1,1,1,1)
+robots
+  robot recolector
+  variables
+    id,ca,av,avIn,caIn,cant:numero
+    termine:boolean
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    avIn:= PosAv
+    caIn:= PosCa
+    cant:=0
+    repetir 5
+      Random(av,45,62)
+      Random(ca,48,69)
+      BloquearEsquina(av,ca)
+      Pos(av,ca)
+      juntarCosas(id,cant)
+      Pos(avIn,caIn)
+      LiberarEsquina(av,ca)
+    EnviarMensaje(0,robotJefe)
+    RecibirMensaje(termine,robotJefe)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(cant,robotJefe)
+  fin
+  robot jefe
+  variables
+    cont,cant,max,maxId,id:numero
+  comenzar
+    cont:=0
+    max:=0
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    mientras (cont <> 4)  
+      RecibirMensaje(id,*)
+      si (id = 0)
+        cont:= cont + 1
+    EnviarMensaje(V,robot1)
+    EnviarMensaje(V,robot2)
+    EnviarMensaje(V,robot3)
+    EnviarMensaje(V,robot4)
+    repetir 4
+      RecibirMensaje(id,*)
+      Informar(id)
+      si (id = 1) 
+        RecibirMensaje(cant,robot1)
+      sino 
+        si (id = 2)
+          RecibirMensaje(cant,robot2)
+        sino 
+          si (id = 3)
+            RecibirMensaje(cant,robot3)
+          sino 
+            RecibirMensaje(cant,robot4)
+      maximo(id,cant,max,maxId)
+    Informar(maxId,max)
+  fin
+variables
+  robot1,robot2,robot3,robot4:recolector
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot4,area4)
+  AsignarArea(robot1,area)
+  AsignarArea(robot2,area)
+  AsignarArea(robot3,area)
+  AsignarArea(robot4,area)
+  AsignarArea(robotJefe,areaJefe) 
+  Iniciar(robot1,10,10)
+  Iniciar(robot2,11,10)
+  Iniciar(robot3,12,10)
+  Iniciar(robot4,13,10)
+  Iniciar(robotJefe,1,1)
+fin
+

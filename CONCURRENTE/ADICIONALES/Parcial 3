@@ -1,0 +1,148 @@
+programa parcial3
+procesos
+  proceso recolectar (ES p:numero; ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)  
+      tomarFlor
+      f:= f + 1
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+  proceso avanzar (E aux:numero; ES f:numero; ES p:numero)
+  comenzar
+    repetir aux
+      recolectar(p,f)
+      mover
+    recolectar(p,f)
+  fin
+areas
+  areaJefe:AreaP(20,15,20,15)
+  areaComun:AreaPC(1,1,9,9)
+  area1:AreaP(20,1,20,1)
+  area2:AreaP(20,2,20,2)
+  area3:AreaP(20,4,20,4)
+  area4:AreaP(20,5,20,5)
+robots
+  robot vertical
+  variables
+    id,f,p:numero 
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    f:=0 
+    p:=0
+    si (id = 1)
+      Pos(2,1)
+    sino
+      Pos(6,1)
+    repetir 4
+      recolectar(p,f)
+      BloquearEsquina(PosAv,PosCa + 1)
+      mover
+      recolectar(p,f)
+      mover
+      LiberarEsquina(PosAv, PosCa - 1)
+    recolectar(p,f)
+    derecha
+    avanzar(2,f,p)
+    derecha
+    repetir 4
+      recolectar(p,f)
+      BloquearEsquina(PosAv,PosCa - 1)
+      mover
+      recolectar(p,f)
+      mover
+      LiberarEsquina(PosAv,PosCa + 1)
+    recolectar(p,f)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(f,robotJefe)
+    EnviarMensaje(p,robotJefe)
+  fin 
+  robot horizontal 
+  variables
+    id,f,p:numero
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    f:=0
+    p:=0
+    derecha
+    si (id = 3)
+      Pos(1,2)
+    sino
+      Pos(1,6)
+    repetir 4
+      recolectar(p,f)
+      BloquearEsquina(PosAv + 1, PosCa)
+      mover
+      recolectar(p,f)
+      mover
+      LiberarEsquina(PosAv - 1, PosCa)
+    recolectar(p,f)
+    repetir 3
+      derecha
+    avanzar(2,f,p)
+    repetir 3
+      derecha
+    repetir 4
+      recolectar(p,f)
+      BloquearEsquina(PosAv - 1, PosCa)
+      mover
+      recolectar(p,f)
+      mover
+      LiberarEsquina(PosAv + 1, PosCa)
+    recolectar(p,f)
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(f,robotJefe)
+    EnviarMensaje(p,robotJefe)
+  fin
+  robot jefe
+  variables 
+    id,cantF,cantP,f,p:numero
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    cantF:=0
+    cantP:=0
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(f,robot1)
+        RecibirMensaje(p,robot1)
+      sino
+        si (id = 2)
+          RecibirMensaje(f,robot2)
+          RecibirMensaje(p,robot2)
+        sino
+          si (id = 3)
+            RecibirMensaje(f,robot3)
+            RecibirMensaje(p,robot3)
+          sino
+            RecibirMensaje(f,robot4)
+            RecibirMensaje(p,robot4)
+      cantF:= cantF + f
+      cantP:= cantP + p
+    Informar('FLORES',cantF)
+    Informar('PAPELES',cantP)
+  fin
+variables
+  robot1,robot2:vertical
+  robot3,robot4:horizontal
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot4,area4)
+  AsignarArea(robot1,areaComun)
+  AsignarArea(robot2,areaComun)
+  AsignarArea(robot3,areaComun)
+  AsignarArea(robot4,areaComun)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robot1,20,1)
+  Iniciar(robot2,20,2)
+  Iniciar(robot3,20,4)
+  Iniciar(robot4,20,5)
+  Iniciar(robotJefe,20,15)
+fin

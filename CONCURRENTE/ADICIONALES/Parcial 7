@@ -1,0 +1,109 @@
+programa parcia7
+procesos
+  proceso avanzarFlorero (E aux:numero; ES f:numero)
+  comenzar
+    repetir aux
+      juntarFlores(f)
+      mover
+    juntarFlores(f)
+  fin
+  proceso juntarFlores (ES f:numero)
+  comenzar
+    mientras(HayFlorEnLaEsquina)
+      tomarFlor
+      f:= f + 1
+  fin
+  proceso avanzarPapelero (E aux:numero; ES p:numero)
+  comenzar
+    repetir aux
+      juntarPapeles(p)
+      mover
+    juntarPapeles(p)
+  fin
+  proceso juntarPapeles (ES p:numero)
+  comenzar
+    mientras(HayPapelEnLaEsquina)
+      tomarPapel
+      p:= p + 1
+  fin
+areas
+  areaAzul:AreaPC(2,4,12,24)
+  areaVerde:AreaPC(16,4,26,24)
+  areaJefe:AreaP(1,1,1,1)
+robots
+  robot florero
+  variables 
+    id,f,av,ca:numero
+  comenzar
+    derecha
+    RecibirMensaje(id,robotJefe)
+    f:=0
+    avanzarFlorero(4,f)
+    BloquearEsquina(PosAv + 1,PosCa)
+    mover
+    juntarFlores(f)
+    mover
+    LiberarEsquina(PosAv - 1,PosCa)
+    avanzarFlorero(4,f)
+    si (id = 1)
+      EnviarMensaje(f,robot2)
+    sino
+      EnviarMensaje(f,robot4)
+  fin
+  robot papelero
+  variables 
+    id,p,total,av,ca:numero
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    p:=0
+    avanzarPapelero(7,p)
+    BloquearEsquina(PosAv,PosCa + 1)
+    mover
+    juntarPapeles(p)
+    mover
+    LiberarEsquina(PosAv,PosCa - 1)
+    avanzarPapelero(9,p)
+    si (id = 2)
+      RecibirMensaje(total,robot1)
+    sino 
+      RecibirMensaje(total,robot3)
+    total:= total + p 
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(total,robotJefe)
+  fin
+  robot jefe
+  variables
+    id,a,v:numero
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3)
+    EnviarMensaje(4,robot4)
+    repetir 2
+      RecibirMensaje(id,*)
+      si (id = 2)
+        RecibirMensaje(a,robot2)
+      sino
+        RecibirMensaje(v,robot4)
+    si (a > v)
+      Informar('AZUL',a)
+    sino
+      Informar('VERDE',v)
+  fin
+variables
+  robot1,robot3:florero
+  robot2,robot4:papelero
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,areaAzul)
+  AsignarArea(robot2,areaAzul)
+  AsignarArea(robot3,areaVerde)
+  AsignarArea(robot4,areaVerde)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robot1,2,12)
+  Iniciar(robot3,16,12)
+  Iniciar(robot2,7,4)
+  Iniciar(robot4,21,4)
+  Iniciar(robotJefe,1,1)
+fin
+

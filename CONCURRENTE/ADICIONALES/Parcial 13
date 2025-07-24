@@ -1,0 +1,166 @@
+programa parcial13
+procesos
+  proceso enviarID
+  comenzar
+    EnviarMensaje(1,robot1)
+    EnviarMensaje(2,robot2)
+    EnviarMensaje(3,robot3) 
+    EnviarMensaje(4,robot4)
+  fin
+  proceso tomarFloreEsquina(E avIn:numero; E caIn:numero)
+  comenzar
+    BloquearEsquina(15,15)
+    Pos(15,15) 
+    tomarFlor
+    Pos(avIn,caIn)
+    LiberarEsquina(15,15)
+  fin
+  proceso tomarPapelEsquina(E avIn:numero; E caIn:numero)
+  comenzar
+    BloquearEsquina(15,15)
+    Pos(15,15) 
+    tomarPapel
+    Pos(avIn,caIn)
+    LiberarEsquina(15,15)
+  fin
+areas
+  area1:AreaP(50,50,50,50)
+  area2:AreaP(51,51,51,51)
+  area3:AreaP(52,52,52,52)
+  area4:AreaP(53,53,53,53)
+  deposito:AreaPC(15,15,15,15)
+  areaJefe:AreaP(1,1,1,1)
+  esquina1:AreaPC(5,4,5,4)
+  esquina2:AreaPC(11,4,11,4)
+  vertical1:AreaP(5,5,5,16)
+  vertical2:AreaP(11,5,11,16)
+  horizontal1:AreaP(6,4,9,4)
+  horizontal2:AreaP(12,4,15,4)
+robots
+  robot horizontal 
+  variables
+    id,avIn,caIn,av,ca:numero
+  comenzar
+    RecibirMensaje(id,robotJefe) 
+    ca:= 4
+    si (id = 2)
+      av:= 5
+    sino
+      av:= 11 
+    derecha
+    BloquearEsquina(15,15)
+    Pos(15,15)
+    tomarFlor
+    BloquearEsquina(av,ca)
+    Pos(av,ca)
+    LiberarEsquina(15,15)
+    depositarFlor
+    mover
+    LiberarEsquina(av,ca)
+    repetir 3
+      avIn:= PosAv
+      caIn:= PosCa
+      tomarFloreEsquina(avIn,caIn)
+      depositarFlor
+      mover
+    avIn:= PosAv
+    caIn:= PosCa
+    tomarFloreEsquina(avIn,caIn)
+    depositarFlor
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(V,robotJefe)
+  fin
+  robot vertical 
+  variables
+    id,avIn,caIn,av,ca:numero
+  comenzar
+    RecibirMensaje(id,robotJefe)
+    ca:= 4
+    si (id = 1)
+      av:= 5
+    sino
+      av:= 11
+    BloquearEsquina(15,15)
+    Pos(15,15)
+    tomarPapel
+    BloquearEsquina(av,ca)
+    Pos(av,ca)
+    LiberarEsquina(15,15) 
+    depositarPapel
+    mover
+    LiberarEsquina(av,ca)
+    repetir 11
+      avIn:= PosAv
+      caIn:= PosCa
+      tomarPapelEsquina(avIn,caIn)
+      depositarPapel
+      mover
+    avIn:= PosAv
+    caIn:= PosCa
+    tomarPapelEsquina(avIn,caIn)
+    depositarPapel
+    EnviarMensaje(id,robotJefe)
+    EnviarMensaje(V,robotJefe)
+  fin
+  robot jefe
+  variables
+    id,winner,cont1,cont2:numero
+    listo,ganador:boolean
+  comenzar
+    enviarID
+    ganador:=F
+    repetir 4
+      RecibirMensaje(id,*)
+      si (id = 1)
+        RecibirMensaje(listo,robot1)
+        cont1:= cont1 + 1
+      sino      
+        si (id = 2)
+          RecibirMensaje(listo,robot2)
+          cont1:= cont1 + 1
+        sino
+          si (id = 3)
+            RecibirMensaje(listo,robot3)
+            cont2:= cont2 + 1
+          sino
+            RecibirMensaje(listo,robot4)
+            cont2:= cont2 + 1
+      si (cont1 = 2)
+        si (ganador = F)
+          ganador:= V
+          winner:= 1  
+      si (cont2 = 2) 
+        si (ganador = F)
+          ganador:= V
+          winner:= 2  
+      Informar(winner)
+    Informar(winner)
+  fin
+variables
+  robot1,robot3:vertical
+  robot2,robot4:horizontal
+  robotJefe:jefe
+comenzar
+  AsignarArea(robot1,area1)
+  AsignarArea(robot1,deposito)
+  AsignarArea(robot1,vertical1)
+  AsignarArea(robot2,area2)
+  AsignarArea(robot2,deposito)
+  AsignarArea(robot2,horizontal1)
+  AsignarArea(robot3,area3)
+  AsignarArea(robot3,deposito)
+  AsignarArea(robot3,vertical2)
+  AsignarArea(robot4,area4)
+  AsignarArea(robot4,deposito)
+  AsignarArea(robot4,horizontal2)
+  AsignarArea(robot1,esquina1)
+  AsignarArea(robot2,esquina1)
+  AsignarArea(robot3,esquina2)
+  AsignarArea(robot4,esquina2)
+  AsignarArea(robotJefe,areaJefe)
+  Iniciar(robot1,50,50)
+  Iniciar(robot2,51,51)
+  Iniciar(robot3,52,52)
+  Iniciar(robot4,53,53)
+  Iniciar(robotJefe,1,1)
+fin
